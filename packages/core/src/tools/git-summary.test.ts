@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GitSummaryTool } from './git-summary.js';
-import { simpleGit } from 'simple-git';
+import { simpleGit, type SimpleGit } from 'simple-git';
 
 vi.mock('simple-git');
 
@@ -21,7 +21,7 @@ describe('GitSummaryTool', () => {
           { hash: 'abcdef2', message: 'test commit 2' },
         ],
       }),
-    } as any);
+    } as unknown as SimpleGit);
   });
 
   it('getDescription includes count', () => {

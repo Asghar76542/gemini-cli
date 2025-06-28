@@ -45,6 +45,7 @@ The core comes with a suite of pre-defined tools, typically found in `packages/c
   - `WebSearchTool` (`web-search.ts`): Performs a web search.
 - **Memory Tools:**
   - `MemoryTool` (`memoryTool.ts`): Interacts with the AI's memory.
+  - `GitSummaryTool` (`git-summary.ts`): Summarizes recent git commits.
 
 Each of these tools extends `BaseTool` and implements the required methods for its specific functionality.
 

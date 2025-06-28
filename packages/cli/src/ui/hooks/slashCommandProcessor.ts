@@ -683,6 +683,69 @@ export const useSlashCommandProcessor = (
         },
       },
       {
+        name: 'share',
+        description: 'export conversation to a Markdown file',
+        action: async (_mainCommand, _subCommand, args) => {
+          if (!config) {
+            addMessage({
+              type: MessageType.ERROR,
+              content: 'No configuration available.',
+              timestamp: new Date(),
+            });
+            return;
+          }
+          const geminiClient = await config.getGeminiClient();
+          const history = await geminiClient?.getHistory();
+          if (!history || history.length === 0) {
+            addMessage({
+              type: MessageType.INFO,
+              content: 'No conversation history to share.',
+              timestamp: new Date(),
+            });
+            return;
+          }
+
+          const fileName =
+            args && args.trim()
+              ? args.trim()
+              : `gemini-chat-${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
+          const outputDir = config.getProjectRoot() || process.cwd();
+          const filePath = path.join(outputDir, fileName);
+
+          const markdown = history
+            .map((item) => {
+              const role = item.role === 'user' ? 'User' : 'Gemini';
+              const text = (item.parts || [])
+                .map((p) => {
+                  if (typeof p === 'string') return p;
+                  if ('text' in p && typeof p.text === 'string') return p.text;
+                  return '';
+                })
+                .join('');
+              return `**${role}:**\n${text}`;
+            })
+            .join('\n\n');
+
+          try {
+            await fs.mkdir(path.dirname(filePath), { recursive: true });
+            await fs.writeFile(filePath, markdown, 'utf-8');
+            addMessage({
+              type: MessageType.INFO,
+              content: `Conversation exported to ${filePath}`,
+              timestamp: new Date(),
+            });
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : String(error);
+            addMessage({
+              type: MessageType.ERROR,
+              content: `Failed to write file: ${message}`,
+              timestamp: new Date(),
+            });
+          }
+        },
+      },
+      {
         name: 'chat',
         description:
           'Manage conversation history. Usage: /chat <list|save|resume> [tag]',

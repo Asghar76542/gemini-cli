@@ -26,15 +26,19 @@ describe('GitSummaryTool', () => {
 
   it('getDescription includes count', () => {
     const tool = new GitSummaryTool('.');
-    expect(tool.getDescription({ count: 3 })).toBe('summary of last 3 commit(s)');
+    expect(tool.getDescription({ count: 3 })).toBe(
+      'summary of last 3 commit(s)',
+    );
   });
 
   it('execute returns commit summary', async () => {
     const tool = new GitSummaryTool('.');
-    const result = await tool.execute({ count: 2 }, new AbortController().signal);
+    const result = await tool.execute(
+      { count: 2 },
+      new AbortController().signal,
+    );
     expect(result.llmContent).toContain('abcdef1');
     expect(result.llmContent).toContain('test commit 1');
     expect(result.returnDisplay).toBe('2 commit(s)');
   });
 });
-

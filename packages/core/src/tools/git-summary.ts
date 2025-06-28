@@ -53,15 +53,21 @@ export class GitSummaryTool extends BaseTool<GitSummaryParams, ToolResult> {
   ): Promise<ToolResult> {
     const error = this.validateToolParams(params);
     if (error) {
-      return { llmContent: `Error: ${error}`, returnDisplay: `Error: ${error}` };
+      return {
+        llmContent: `Error: ${error}`,
+        returnDisplay: `Error: ${error}`,
+      };
     }
     const count = params.count ?? 5;
     try {
       const git = simpleGit(this.repoPath);
       const log = await git.log({ n: count });
-      const lines = log.all.map(c => `- ${c.hash.slice(0,7)}: ${c.message}`);
+      const lines = log.all.map((c) => `- ${c.hash.slice(0, 7)}: ${c.message}`);
       const content = `Recent commits:\n${lines.join('\n')}`;
-      return { llmContent: content, returnDisplay: `${lines.length} commit(s)` };
+      return {
+        llmContent: content,
+        returnDisplay: `${lines.length} commit(s)`,
+      };
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       return {
@@ -71,4 +77,3 @@ export class GitSummaryTool extends BaseTool<GitSummaryParams, ToolResult> {
     }
   }
 }
-
